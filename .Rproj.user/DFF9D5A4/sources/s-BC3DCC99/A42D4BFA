@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1548941713194.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4204303563",
+    "id" : "A42D4BFA",
+    "lastKnownWriteTime" : 1548941799,
+    "last_content_update" : 1548941799224,
+    "path" : "~/code/JLeop/GTA/functions/ggplot_interventions.R",
+    "project_path" : "functions/ggplot_interventions.R",
+    "properties" : {
+        "cursorPosition" : "59,0",
+        "scrollLine" : "45"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
