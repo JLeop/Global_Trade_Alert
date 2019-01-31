@@ -24,6 +24,7 @@ library(openxlsx)
 # Load functions ----------------------------------------------------------
 
 source("functions/ggplot_interventions.R")
+source("functions/data_transformation.R")
 
 # Load data ---------------------------------------------------------------
 
@@ -56,53 +57,15 @@ interventions_data$year.announced <-
   format(as.Date(master_data$date.announced,
                  format="%Y-%M-%D"),"%Y")
 
-# Subset data: 
-uniq_interventions <- interventions_data %>% 
-  select(intervention.id, year.announced, gta.evaluation) %>%
-  filter(year.announced > "2008" & year.announced < "2019") %>%
-  distinct(intervention.id, .keep_all = TRUE) # Unique interventions by id
-  
-# Summarize obs for unique combination of year and gta.evaluation
-sum_interventions <- uniq_interventions %>% 
-  group_by(year.announced, gta.evaluation) %>%
-  summarize(count=n()) 
 
-# Add total value by summing up all gta.evaluations
-total <- setNames(aggregate(sum_interventions$count, 
-                   by=list(sum_interventions$year.announced), 
-                   FUN=sum), c("year.announced", "count"))
+# Data Transformation -----------------------------------------------------
 
-total <- mutate(total, gta.evaluation = "Total")
-
-# Bind to sum_uniq_interventions data
-eval_and_tot_interventions <- bind_rows(sum_interventions, total)
-eval_and_tot_interventions$gta.evaluation <- 
-  factor(eval_and_tot_interventions$gta.evaluation) 
-levels(eval_and_tot_interventions$gta.evaluation) <- 
-  c("Green","Amber","Red","Total")
-
-# Plot --------------------------------------------------------------------
-
-# Prepare min and max values within each group for ggrepel
-
-max <- setNames(aggregate(eval_and_tot_interventions$count, 
-                          by=list(eval_and_tot_interventions$gta.evaluation), 
-                          FUN=max), c("gta.evaluation", "value"))
-
-min <- setNames(aggregate(eval_and_tot_interventions$count, 
-                          by=list(eval_and_tot_interventions$gta.evaluation), 
-                          FUN=min), c("gta.evaluation", "value"))
-
-repel_labels <- bind_rows(min, max)
-
-# show only the minimum and maximum values in the label column
-eval_and_tot_interventions$labels <- eval_and_tot_interventions$count
-eval_and_tot_interventions$labels <- ifelse(eval_and_tot_interventions$labels %in% 
-                                        repel_labels$value, 
-                                        eval_and_tot_interventions$labels,"")
-
+# Using function created in separate file.
+eval_and_tot_interventions <- data_transformation(interventions_data,
+                                                  ggrepel_labels = TRUE)
 
 # Create plot -------------------------------------------------------------
+
 # Using function created in separate file.
 ggplot_interventions(eval_and_tot_interventions)
 
@@ -113,9 +76,12 @@ ggsave("plots/Number_of_Interventions.png",
        height = 10, 
        units = c("cm"))
 
-# Save data as xlsx -------------------------------------------------------
+# Save data as xlsx (long and wide) ---------------------------------------
 
 total$gta.evaluation <- NULL
+
+# Personally I believe the long format is more suitable for the creation
+# of plots.
 
 wb_long <- createWorkbook()
 sheet_eval <- addWorksheet(wb_long, "Evaluated_Interventions")
@@ -125,7 +91,9 @@ writeData(wb_long, sheet = sheet_eval, x = sum_interventions)
 writeData(wb_long, sheet = sheet_tot, x = total)
 
 # long format
-saveWorkbook(wb_long, file = "data/summed_interventions_long.xlsx", overwrite = TRUE)
+saveWorkbook(wb_long, 
+             file = "data/summed_interventions_long.xlsx", 
+             overwrite = TRUE)
 
 # wide format
 sum_interventions_wide <- spread(sum_interventions, 
@@ -143,9 +111,111 @@ writeData(wb_wide, sheet = sheet_eval, x = sum_interventions_wide)
 writeData(wb_wide, sheet = sheet_tot, x = total_wide)
 
 # long format
-saveWorkbook(wb_wide, file = "data/summed_interventions_wide.xlsx", overwrite = TRUE)
+saveWorkbook(wb_wide, 
+             file = "data/summed_interventions_wide.xlsx", 
+             overwrite = TRUE)
 
 # Plot for each G20 Member ------------------------------------------------
 
+# checking for duplicates/spelling errors in country names.
+country_names <- unique(master_data$affected.jurisdiction)
+country_names[order(country_names)]
+# Russia != Russian Federation
+# United Kindom != United Kingdom of Great Britain and Northern Ireland
+# European Union values need to be aggregated from country_data$EU.G20
 
+# select G20 members
+G20_names <- country_data %>%
+  filter(G20 == 1) %>%
+  select(name)
+G20_names[[18,1]] <- "United Kingdom"
 
+G20_names[[14,1]] <- "Russia"
+
+# for each member in G20 create and save plot
+no_data_available = list() # check which countries do not have data
+
+for (index in c(1:length(G20_names$name))){
+  
+  # select interventions for each member
+  interventions_G20_member <- interventions_data %>%
+    filter(implementing.jurisdiction == G20_names[[index,1]]) %>%
+    select(intervention.id, gta.evaluation, year.announced)
+  
+  # sum data for each year
+  if(nrow(interventions_G20_member) > 0){ # check if data is available
+    eval_and_tot_interv_G20 <- data_transformation(interventions_G20_member, 
+                                                   ggrepel_labels = FALSE)
+  } else {
+    eval_and_tot_interv_G20 <- tibble("year.announced" = c(2009:2018), 
+                                      "count" = 0, 
+                                      "gta.evaluation" = 'Total',
+                                      "labels" = "")
+    no_data_available <- c(no_data_available, G20_names[[index,1]]) 
+    # add to list if there is no data 
+  }
+  
+  # make name shorter to fit plot if the name is longer
+  # happens for UK & Ireland and US
+  if(nchar(G20_names[[index,1]]) > 20){
+    name_split <- strsplit(G20_names[[index,1]], " ")
+    country_name <- paste(lapply(name_split, '[[', 1), 
+                          lapply(name_split, '[[', 2))
+  } else {
+    country_name <- G20_names[[index,1]]
+  }
+  
+  print(country_name)
+  
+  # create plot
+  ggplot_interventions(eval_and_tot_interv_G20, 
+                       plot_title = paste("Interventions of", 
+                                          country_name, "from 2009 to 2018"))
+  
+  # save plot
+  ggsave(paste("plots/Number of Interventions", country_name,".png"), 
+         width = 16, 
+         height = 10, 
+         units = c("cm"))
+  
+}
+
+# Checking Data of Empty Plots --------------------------------------------
+
+# For these countries no data about interventions is available.
+print(no_data_available)
+# No data for the European Union.
+
+# European Union Interventions --------------------------------------------
+
+country_name <- "European Union"
+  
+EU_G20_names <- country_data %>%
+  filter(EU.G20 == 1) %>%
+  select(name)
+EU_G20_names[[4,1]] <- "United Kingdom"
+
+# select interventions for each member
+interventions_EU <- interventions_data %>%
+  filter(implementing.jurisdiction %in% EU_G20_names$name) %>%
+  select(intervention.id, gta.evaluation, year.announced)
+
+# sum data for each year
+eval_and_tot_EU_G20 <- data_transformation(interventions_EU, 
+                                                ggrepel_labels = FALSE)
+
+# create plot
+ggplot_interventions(eval_and_tot_EU_G20, 
+                     plot_title = paste("Interventions of", 
+                                        country_name, "from 2009 to 2018"))
+
+# save plot
+ggsave(paste("plots/Number of Interventions", country_name,".png"), 
+       width = 16, 
+       height = 10, 
+       units = c("cm"))
+
+# Remarks -----------------------------------------------------------------
+
+# Name of plot for UK and Ireland now only says:
+# Interventions of United Kingdom.

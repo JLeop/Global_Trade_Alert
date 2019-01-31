@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1548947611112.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4043683086",
+    "id" : "408A5D18",
+    "lastKnownWriteTime" : 1548950289,
+    "last_content_update" : 1548950289242,
+    "path" : "~/code/JLeop/GTA/functions/data_transformation.R",
+    "project_path" : "functions/data_transformation.R",
+    "properties" : {
+        "cursorPosition" : "60,41",
+        "scrollLine" : "45",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
