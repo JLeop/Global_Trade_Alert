@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1548944792673.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "7D074FF2",
+    "lastKnownWriteTime" : 1548942515,
+    "last_content_update" : 1548944792673,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "B41843FA",
+        "caption" : "wide_sum_uniq_interventions",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=wide_sum_uniq_interventions&cache_key=B41843FA",
+        "displayedObservations" : 3,
+        "environment" : "",
+        "object" : "wide_sum_uniq_interventions",
+        "preview" : 0,
+        "totalObservations" : 3,
+        "variables" : 11
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

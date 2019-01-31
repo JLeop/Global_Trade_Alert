@@ -5,7 +5,7 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "4204303563",
+    "hash" : "0",
     "id" : "A42D4BFA",
     "lastKnownWriteTime" : 1548941799,
     "last_content_update" : 1548941799224,
@@ -13,7 +13,7 @@
     "project_path" : "functions/ggplot_interventions.R",
     "properties" : {
         "cursorPosition" : "59,0",
-        "scrollLine" : "45"
+        "scrollLine" : "0"
     },
     "relative_order" : 3,
     "source_on_save" : false,

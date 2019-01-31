@@ -19,9 +19,9 @@ cat("\014") # clear console
 
 library(tidyverse)
 library(ggrepel)
-library(xlsx)
+library(openxlsx)
 
-Load functions ----------------------------------------------------------
+# Load functions ----------------------------------------------------------
 
 source("functions/ggplot_interventions.R")
 
@@ -63,48 +63,48 @@ uniq_interventions <- interventions_data %>%
   distinct(intervention.id, .keep_all = TRUE) # Unique interventions by id
   
 # Summarize obs for unique combination of year and gta.evaluation
-sum_uniq_interventions <- uniq_interventions %>% 
+sum_interventions <- uniq_interventions %>% 
   group_by(year.announced, gta.evaluation) %>%
   summarize(count=n()) 
 
 # Add total value by summing up all gta.evaluations
-total <- setNames(aggregate(sum_uniq_interventions$count, 
-                   by=list(sum_uniq_interventions$year.announced), 
+total <- setNames(aggregate(sum_interventions$count, 
+                   by=list(sum_interventions$year.announced), 
                    FUN=sum), c("year.announced", "count"))
 
 total <- mutate(total, gta.evaluation = "Total")
 
 # Bind to sum_uniq_interventions data
-sum_uniq_interventions <- bind_rows(sum_uniq_interventions, total)
-sum_uniq_interventions$gta.evaluation <- 
-  factor(sum_uniq_interventions$gta.evaluation) 
-levels(sum_uniq_interventions$gta.evaluation) <- 
+eval_and_tot_interventions <- bind_rows(sum_interventions, total)
+eval_and_tot_interventions$gta.evaluation <- 
+  factor(eval_and_tot_interventions$gta.evaluation) 
+levels(eval_and_tot_interventions$gta.evaluation) <- 
   c("Green","Amber","Red","Total")
 
 # Plot --------------------------------------------------------------------
 
 # Prepare min and max values within each group for ggrepel
 
-max <- setNames(aggregate(sum_uniq_interventions$count, 
-                          by=list(sum_uniq_interventions$gta.evaluation), 
+max <- setNames(aggregate(eval_and_tot_interventions$count, 
+                          by=list(eval_and_tot_interventions$gta.evaluation), 
                           FUN=max), c("gta.evaluation", "value"))
 
-min <- setNames(aggregate(sum_uniq_interventions$count, 
-                          by=list(sum_uniq_interventions$gta.evaluation), 
+min <- setNames(aggregate(eval_and_tot_interventions$count, 
+                          by=list(eval_and_tot_interventions$gta.evaluation), 
                           FUN=min), c("gta.evaluation", "value"))
 
 repel_labels <- bind_rows(min, max)
 
 # show only the minimum and maximum values in the label column
-sum_uniq_interventions$labels <- sum_uniq_interventions$count
-sum_uniq_interventions$labels <- ifelse(sum_uniq_interventions$labels %in% 
+eval_and_tot_interventions$labels <- eval_and_tot_interventions$count
+eval_and_tot_interventions$labels <- ifelse(eval_and_tot_interventions$labels %in% 
                                         repel_labels$value, 
-                                        sum_uniq_interventions$labels,"")
+                                        eval_and_tot_interventions$labels,"")
 
 
 # Create plot -------------------------------------------------------------
 # Using function created in separate file.
-ggplot_interventions(sum_uniq_interventions)
+ggplot_interventions(eval_and_tot_interventions)
 
 # Save Plot as png --------------------------------------------------------
 
@@ -115,7 +115,35 @@ ggsave("plots/Number_of_Interventions.png",
 
 # Save data as xlsx -------------------------------------------------------
 
+total$gta.evaluation <- NULL
 
+wb_long <- createWorkbook()
+sheet_eval <- addWorksheet(wb_long, "Evaluated_Interventions")
+sheet_tot <- addWorksheet(wb_long, "Total_Interventions")
+
+writeData(wb_long, sheet = sheet_eval, x = sum_interventions)
+writeData(wb_long, sheet = sheet_tot, x = total)
+
+# long format
+saveWorkbook(wb_long, file = "data/summed_interventions_long.xlsx", overwrite = TRUE)
+
+# wide format
+sum_interventions_wide <- spread(sum_interventions, 
+                                      key = year.announced,
+                                      value = count)
+total_wide <- spread(total, 
+                     key = year.announced, 
+                     value = count)
+
+wb_wide <- createWorkbook()
+sheet_eval <- addWorksheet(wb_wide, "Evaluated_Interventions")
+sheet_tot <- addWorksheet(wb_wide, "Total_Interventions")
+
+writeData(wb_wide, sheet = sheet_eval, x = sum_interventions_wide)
+writeData(wb_wide, sheet = sheet_tot, x = total_wide)
+
+# long format
+saveWorkbook(wb_wide, file = "data/summed_interventions_wide.xlsx", overwrite = TRUE)
 
 # Plot for each G20 Member ------------------------------------------------
 
