@@ -1,0 +1,23 @@
+Data
+The GTA data is here. I also attach a correspondence between country names and several classifications (e.g. ISO codes or UN codes).
+
+Use only the master data frame. For your reference, the meaning of the variables in the data frame is:  
+intervention.id. The intervention ID is the basic unit of the database. Each intervention on the site has its own ID.
+state.act.id. A state act is a government announcement. It can include 1 or more interventions.
+title. A string with the title of the GTA entry
+intervention.type. The policy instrument used.
+mast.chapter (and ID). The classification of the instrument according to the UN MAST standard.
+implementing.jurisdiction. The acting nation(s).
+i.un. UN code of the implementing jurisdiction.
+i.atleastone.G20. At least one G20 member is among the implementing jurisdictions.
+affected.jurisdiction. The potentially affected jurisdiction.
+a.un. UN code of the affected jurisdiction
+i.atleastone.G20. At least one G20 member is among the implementing jurisdictions.
+date.announced. The date the intervention(s) were announced.
+date.implemented. The date the intervention went into force (if empty = not implemented, yet).
+date.removed. The date an intervention was revoked.
+gta.evaluation. Red for discriminator, amber for likely discriminator, and green for liberalising.
+implementation.level. The level of the acting government authority (national, supranational, subnational, agencies)
+eligible.firm. Describes whether all or only a subset of the stated product's producers were potentially affected by the intervention.
+affected.flow. Inward for interventions affecting inflows, outward for interventions affecting outflows; and outward subsidy for e.g. export subsidies.
+date.published. The date the entry was published.

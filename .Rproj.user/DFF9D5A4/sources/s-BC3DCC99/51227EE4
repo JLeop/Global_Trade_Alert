@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1548920135788.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "51227EE4",
+    "lastKnownWriteTime" : 1548938912,
+    "last_content_update" : 1548938912463,
+    "path" : "~/code/JLeop/GTA/interventions_over_time.R",
+    "project_path" : "interventions_over_time.R",
+    "properties" : {
+        "cursorPosition" : "160,0",
+        "scrollLine" : "144",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
