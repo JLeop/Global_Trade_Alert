@@ -8,7 +8,7 @@
 # Plots saved as png.
 # Data saved in xlsx.
 # 
-# J. Leopold, St. Gallen, 2018
+# J. Leopold, St. Gallen, 2019
 #######################################################################
 
 rm(list=ls()) # remove variables
@@ -60,8 +60,12 @@ interventions_data$year.announced <-
 
 # Data Transformation -----------------------------------------------------
 
-# Using function created in separate file.
-eval_and_tot_interventions <- data_transformation(interventions_data,
+# Using functions created in separate file.
+sum_interventions <- sum_interventions_data(interventions_data)
+total <- total_data(sum_interventions)
+# Adding evluation as label and total interventions.
+eval_and_tot_interventions <- bind_and_label_data(sum_interventions,
+                                                  total,
                                                   ggrepel_labels = TRUE)
 
 # Create plot -------------------------------------------------------------
@@ -78,7 +82,7 @@ ggsave("plots/Number_of_Interventions.png",
 
 # Save data as xlsx (long and wide) ---------------------------------------
 
-total$gta.evaluation <- NULL
+total$gta.evaluation <- NULL # Variable needed for plot. Not needed in xlsx.
 
 # Personally I believe the long format is more suitable for the creation
 # of plots.
@@ -144,15 +148,20 @@ for (index in c(1:length(G20_names$name))){
   
   # sum data for each year
   if(nrow(interventions_G20_member) > 0){ # check if data is available
-    eval_and_tot_interv_G20 <- data_transformation(interventions_G20_member, 
-                                                   ggrepel_labels = FALSE)
+    # Using functions created in separate file.
+    sum_interventions <- sum_interventions_data(interventions_G20_member)
+    total <- total_data(sum_interventions)
+    # Adding evluation as label and total interventions.
+    eval_and_tot_interv_G20 <- bind_and_label_data(sum_interventions,
+                                                      total,
+                                                      ggrepel_labels = FALSE)
   } else {
     eval_and_tot_interv_G20 <- tibble("year.announced" = c(2009:2018), 
                                       "count" = 0, 
                                       "gta.evaluation" = 'Total',
                                       "labels" = "")
     no_data_available <- c(no_data_available, G20_names[[index,1]]) 
-    # add to list if there is no data 
+    # add country name to list if there is no data 
   }
   
   # make name shorter to fit plot if the name is longer
@@ -193,7 +202,7 @@ country_name <- "European Union"
 EU_G20_names <- country_data %>%
   filter(EU.G20 == 1) %>%
   select(name)
-EU_G20_names[[4,1]] <- "United Kingdom"
+EU_G20_names[[4,1]] <- "United Kingdom" # match name in interventions data
 
 # select interventions for each member
 interventions_EU <- interventions_data %>%
@@ -201,8 +210,12 @@ interventions_EU <- interventions_data %>%
   select(intervention.id, gta.evaluation, year.announced)
 
 # sum data for each year
-eval_and_tot_EU_G20 <- data_transformation(interventions_EU, 
-                                                ggrepel_labels = FALSE)
+sum_interventions <- sum_interventions_data(interventions_EU)
+total <- total_data(sum_interventions)
+# Adding evluation as label and total interventions.
+eval_and_tot_EU_G20 <- bind_and_label_data(sum_interventions,
+                                               total,
+                                               ggrepel_labels = FALSE)
 
 # create plot
 ggplot_interventions(eval_and_tot_EU_G20, 
@@ -217,5 +230,5 @@ ggsave(paste("plots/Number of Interventions", country_name,".png"),
 
 # Remarks -----------------------------------------------------------------
 
-# Name of plot for UK and Ireland now only says:
-# Interventions of United Kingdom.
+# Interventions available and plotted only for UK not for UK and 
+# Northern Ireland.
