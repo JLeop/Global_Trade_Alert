@@ -38,6 +38,8 @@ world_gdp_08 <- WDI_GDP_08_data %>%
 
 # Interventions Data
 interventions_data <- read_csv("data/interventions_data.csv")
+# Regions for plot
+economist_data <- read_csv("data/EconomistData.csv")
 
 # Data Transformation and Cleaning ----------------------------------------
 
@@ -111,16 +113,16 @@ length(not_matched$country) # 7 not matched
 
 # Manually correct not matching names -------------------------------------
 
-not_matched_names <- as.list(not_matched$country)
-not_matched_names[[5]] <- NULL
-replace_names <- list("Czech Republic", "Korea, Rep.", 
+intervention_data_names <- as.list(not_matched$country)
+intervention_data_names[[5]] <- NULL
+WDI_names <- list("Czech Republic", "Korea, Rep.", 
                       "Russian Federation", "Slovak Republic", 
                       "United States", "Venezuela, RB")
 
-for (i in 1:length(not_matched_names)){
-  interventions_08_data$country <- gsub(not_matched_names[i], 
-                                        replace_names[i], 
-                                        interventions_08_data$country)
+for (i in 1:length(intervention_data_names)){
+  WDI_GDP_08_data$country <- gsub(WDI_names[i], 
+                                  intervention_data_names[i], 
+                                        WDI_GDP_08_data$country)
 }
 
 GDP_interventions_08_data <- left_join(interventions_08_data, 
@@ -128,6 +130,39 @@ GDP_interventions_08_data <- left_join(interventions_08_data,
 
 # only Swaziland is NA
 GDP_interventions_08_data <- na.omit(GDP_interventions_08_data)
+
+
+# Add Region --------------------------------------------------------------
+
+region_data <- economist_data %>%
+  select(Country, Region) %>%
+  distinct(Country, .keep_all = TRUE) %>%
+  rename(country = Country)
+
+region_data$Region <- factor(region_data$Region,
+                     levels = c("EU W. Europe",
+                                "Americas",
+                                "Asia Pacific",
+                                "East EU Cemt Asia",
+                                "MENA",
+                                "SSA"),
+                     labels = c("OECD",
+                                "Americas",
+                                "Asia &\nOceania",
+                                "Central &\nEastern Europe",
+                                "Middle East &\nnorth Africa",
+                                "Sub-Saharan\nAfrica"))
+
+GDP_interventions_08_data <- left_join(GDP_interventions_08_data, 
+                                       region_data, by = "country")
+
+
+# Manually add NA values
+GDP_interventions_08_data$Region[19] <- "Central &\nEastern Europe" # Czechia
+GDP_interventions_08_data$Region[55] <- "Asia &\nOceania" # Republic of Korea
+GDP_interventions_08_data$Region[68] <- "OECD" # United Kindom
+GDP_interventions_08_data$Region[69] <- "Americas" # United States
+GDP_interventions_08_data$Region[73] <- "Asia &\nOceania" # Vietnam
 
 
 # Add Labels --------------------------------------------------------------
@@ -139,18 +174,15 @@ GDP_interventions_08_data$labels <-
 
 # Scatter plot ----------------------------------------------------------
 
-mR2 <- "Hello"
-
 ggplot(GDP_interventions_08_data, aes(x=share_world_gdp, 
                                       y=interventions_count,
                                       label = labels)) +
   geom_smooth(method = 'lm',
-              aes(linetype = "Exponential Trend"),
+              aes(linetype = "Exp.\nTrend"),
               color = '#D22F5A',
-              fill = '#a6d1f4',
+              fill = '#b5b5b5',
               formula = y ~ exp(x)) +
-  geom_point(shape=21, fill = 'white', size=3, stroke=0.5) +
-  geom_point(size=1, stroke=0.75) +
+  geom_point(aes(colour=Region), shape=21, fill = 'white', size=2.5, stroke=1) +
   geom_text_repel(mapping = aes(label = labels), 
                   point.padding = 0.3,
                   size = 2.7,
@@ -160,7 +192,17 @@ ggplot(GDP_interventions_08_data, aes(x=share_world_gdp,
   scale_y_continuous(name = "Total of Interventions",
                      limits = c(-30,1600),
                      breaks = seq(0,1600, by = 200)) +
-  scale_x_continuous(name = "Share of World GDP") +
+  scale_x_continuous(name = "Share of World GDP")+
+                     #limits = c(-0.002,0.1)) +
+  scale_color_manual(name = "",
+                     values = c("#24576D",
+                                "#099DD7",
+                                "#28AADC",
+                                "#248E84",
+                                "#F2583F",
+                                "#96503F",
+                                "#000000"),
+                     guide = guide_legend(nrow = 1, order=1)) +
   labs(caption="Global Trade Alert, 2019") +
   ggtitle("Total Interventions to Share of World GDP in 2008") +
   theme_minimal() +
@@ -183,7 +225,6 @@ ggplot(GDP_interventions_08_data, aes(x=share_world_gdp,
         plot.title = element_text(size = 14, face = "bold", color = "#3B88C8"))
   
 # Save as .png
-
 ggsave("plots/Interventions to Share of GDP 2008.png", 
        width = 16, 
        height = 10, 
