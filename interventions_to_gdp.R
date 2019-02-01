@@ -133,33 +133,36 @@ GDP_interventions_08_data <- na.omit(GDP_interventions_08_data)
 # Add Labels --------------------------------------------------------------
 
 GDP_interventions_08_data$labels <- 
-  ifelse(GDP_interventions_08_data$share_world_gdp > 0.05 | 
+  ifelse(GDP_interventions_08_data$share_world_gdp > 0.04 | 
            GDP_interventions_08_data$interventions_count > 250, 
          GDP_interventions_08_data$country, "")
 
-# Plot --------------------------------------------------------------------
+# Scatter plot ----------------------------------------------------------
 
-ggplot(GDP_interventions_08_data, aes(x=interventions_count, 
-                                      y=share_world_gdp,
+mR2 <- "Hello"
+
+ggplot(GDP_interventions_08_data, aes(x=share_world_gdp, 
+                                      y=interventions_count,
                                       label = labels)) +
-  geom_point(shape=21, fill = 'white', size=3, stroke=1.25) +
-  geom_smooth(mapping = aes(linetype='r2'),
-            method='lm',
-            formula = y ~ x^2, se = FALSE,
-            color = "red") +
+  geom_smooth(method = 'lm',
+              aes(linetype = "Exponential Trend"),
+              color = '#D22F5A',
+              fill = '#a6d1f4',
+              formula = y ~ exp(x)) +
+  geom_point(shape=21, fill = 'white', size=3, stroke=0.5) +
+  geom_point(size=1, stroke=0.75) +
   geom_text_repel(mapping = aes(label = labels), 
-                  point.padding = 0.5,
+                  point.padding = 0.3,
                   size = 2.7,
-                  nudge_x = 20,
-                  nudge_y = 0.01,
+                  nudge_x = 0.01,
+                  nudge_y = 20,
                   show.legend = FALSE) +
-  scale_x_continuous(name = "Total of Interventions",
-                   limits = c(-30,1600),
-                   breaks = seq(0,1600, by = 100)) +
-  scale_y_continuous(name = "Share of World GDP",
-                     limits = c(0,0.25)) +
+  scale_y_continuous(name = "Total of Interventions",
+                     limits = c(-30,1600),
+                     breaks = seq(0,1600, by = 200)) +
+  scale_x_continuous(name = "Share of World GDP") +
   labs(caption="Global Trade Alert, 2019") +
-  ggtitle("plot_title") +
+  ggtitle("Total Interventions to Share of World GDP in 2008") +
   theme_minimal() +
   theme(text = element_text(color = "gray20"),
         axis.title.x = element_text(size = 12, vjust = -0.2),
@@ -174,13 +177,14 @@ ggplot(GDP_interventions_08_data, aes(x=interventions_count,
         legend.direction = "horizontal",
         legend.box = "horizontal",
         legend.justification = "left",
-        legend.text = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        legend.title = element_blank(),
         plot.caption = element_text(hjust=0),
         plot.title = element_text(size = 14, face = "bold", color = "#3B88C8"))
+  
+# Save as .png
 
-# scatter plot illustrating the relationship between the number of interventions per implementing country and its 
-# share of 2008 world GDP
-
-# Include an exponential trend line in the graph.
-
-# save as png
+ggsave("plots/Interventions to Share of GDP 2008.png", 
+       width = 16, 
+       height = 10, 
+       units = c("cm"))
