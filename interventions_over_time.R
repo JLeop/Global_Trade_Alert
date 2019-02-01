@@ -58,6 +58,11 @@ interventions_data$year.announced <-
                  format="%Y-%M-%D"),"%Y")
 
 
+
+# Export interventions_data for scatterplot in Task 2 ---------------------
+
+write_csv(interventions_data, "data/interventions_data.csv")
+
 # Data Transformation -----------------------------------------------------
 
 # Using functions created in separate file.
