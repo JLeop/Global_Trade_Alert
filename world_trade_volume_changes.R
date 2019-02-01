@@ -28,8 +28,9 @@ world_trade_data_xlsx <-
 world_trade_data <- t(world_trade_data_xlsx)
 
 # colnames 
-new_colnames <- world_trade_data["CPB WORLD TRADE MONITOR",]
-colnames(world_trade_data) <- new_colnames
+new_colnames <- as.vector(world_trade_data["CPB WORLD TRADE MONITOR",])
+new_colnames <- gsub(" ", "_", new_colnames)
+colnames(world_trade_data) <- new_colnames # works only if data is not a tibble
 
 # remove first 4 rows
 world_trade_data <- tail(world_trade_data, -4)
@@ -41,4 +42,28 @@ world_trade_data <-
   world_trade_data[,colSums(is.na(world_trade_data)) < 
                      nrow(world_trade_data)]
 
-tail(world_trade_data)
+# change first column header
+colnames(world_trade_data)[1] <- "year_month"
+
+# change fist column to date
+world_trade_data <- as.tibble(world_trade_data)
+
+world_trade_data$year_month <- gsub("m","-", world_trade_data$year_month)
+world_trade_data$year_month <- paste(world_trade_data$year_month,"-01", sep = "")
+
+world_trade_data$year_month <- format(as.Date(world_trade_data$year_month), "%Y-%m")
+
+# write_csv(world_trade_data, "data/world_trade_data.csv")
+
+str(world_trade_data)
+
+# Sample to work faster with less data ------------------------------------
+
+short_world_trade_data <- world_trade_data[sample(nrow(world_trade_data), 
+                                                  50), ]
+
+# Visualization -----------------------------------------------------------
+
+ggplot(short_world_trade_data, aes(x=year_month, y=World_trade)) + 
+  geom_point()
+
