@@ -196,11 +196,11 @@ ggplot(GDP_interventions_08_data, aes(x=share_world_gdp,
                      #limits = c(-0.002,0.1)) +
   scale_color_manual(name = "",
                      values = c("#24576D",
-                                "#099DD7",
+                                "#96503F",
                                 "#28AADC",
                                 "#248E84",
                                 "#F2583F",
-                                "#96503F",
+                                "#099DD7",
                                 "#000000"),
                      guide = guide_legend(nrow = 1, order=1)) +
   labs(caption="Global Trade Alert, 2019") +
@@ -219,7 +219,7 @@ ggplot(GDP_interventions_08_data, aes(x=share_world_gdp,
         legend.direction = "horizontal",
         legend.box = "horizontal",
         legend.justification = "left",
-        legend.text = element_text(size = 10),
+        legend.text = element_text(size = 8),
         legend.title = element_blank(),
         plot.caption = element_text(hjust=0),
         plot.title = element_text(size = 14, face = "bold", color = "#3B88C8"))
