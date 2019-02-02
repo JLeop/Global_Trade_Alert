@@ -20,6 +20,7 @@ cat("\014") # clear console
 
 library(tidyverse)
 library(WDI)
+library(ggrepel)
 # library(fuzzyjoin) # not suitable
 
 # Load data ---------------------------------------------------------------

@@ -57,6 +57,10 @@ world_trade_data$year_month <- format(as.Date(world_trade_data$year_month), "%Y-
 
 str(world_trade_data)
 
+for(name in colnames_new){
+  world_trade_data[name] <- as.numeric(......)
+}
+
 # Sample to work faster with less data ------------------------------------
 
 short_world_trade_data <- world_trade_data[sample(nrow(world_trade_data), 
