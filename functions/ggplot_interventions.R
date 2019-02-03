@@ -5,7 +5,7 @@
 # This file contains a function plotting interventions over time
 # according to their gta.evaluation.
 #
-# J. Leopold, St. Gallen, 2018
+# J. Leopold, St. Gallen, 2019
 #######################################################################
 
 ggplot_interventions <- 

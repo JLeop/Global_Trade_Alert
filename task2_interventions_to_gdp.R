@@ -193,8 +193,7 @@ ggplot(GDP_interventions_08_data, aes(x=share_world_gdp,
   scale_y_continuous(name = "Total of Interventions",
                      limits = c(-30,1600),
                      breaks = seq(0,1600, by = 200)) +
-  scale_x_continuous(name = "Share of World GDP")+
-                     #limits = c(-0.002,0.1)) +
+  scale_x_continuous(name = "Share of World GDP") +
   scale_color_manual(name = "",
                      values = c("#24576D",
                                 "#96503F",

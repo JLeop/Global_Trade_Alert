@@ -3,9 +3,11 @@
 # Volume dynamics in world trade since the first crisis-related G20 
 # summit held in November 2008
 #
-# Base year currently 2010 for prices.
+# Using CPB-World-Trade data.
+# Base year currently 2010.
+# Output: Plots with relative and absolute World Trade Volume Dynamics
 #
-# J. Leopold, St. Gallen, 2018
+# J. Leopold, St. Gallen, 2019
 #######################################################################
 
 rm(list=ls()) # remove variables
@@ -18,6 +20,7 @@ library(tidyverse)
 library(readxl)
 library(ggrepel)
 library(lubridate)
+library(scales)
 
 # Load data ---------------------------------------------------------------
 
@@ -104,6 +107,7 @@ y_g20_point <- world_trade_data$tgz_w1_qnmi_sn[world_trade_data$label != ""]
 # Visualization of Relative Change ----------------------------------------
 
 ggplot(world_trade_data, aes(x=year_month, y=tgz_w1_qnmi_sn)) + 
+  geom_hline(yintercept = 100, color = '#D22F5A', linetype = "dashed") +
   geom_line(color = "#3B88C8", size = 0.75) +
   geom_point(mapping = aes(x = x_g20_point, y = y_g20_point)) + 
   geom_point(mapping = aes(x = x_g20_point, y = y_g20_point), 
@@ -115,13 +119,15 @@ ggplot(world_trade_data, aes(x=year_month, y=tgz_w1_qnmi_sn)) +
                   nudge_y = -10,
                   show.legend = FALSE) +
   scale_x_date(name = "Year",
-               limits = c(ymd("2005-01-01"), ymd("2018-01-01"))) + 
+               limits = c(ymd("2005-01-01"), ymd("2018-11-01")),
+               breaks = "2 years",
+               labels = date_format("%Y")) + 
   scale_y_continuous(name = "World Trade Volume (in %)",
                      limits = c(75, 
                                 max(world_trade_data$tgz_w1_qnmi_sn))) +
   labs(caption="Global Trade Alert, 2019", 
        subtitle = "Base rate (2010): 100% = 14488.29 billion USD") +
-  ggtitle("Relative Changes in World Trade Volume") +
+  ggtitle("Relative World Trade Volume Dynamics") +
   theme_minimal() +
   theme(text = element_text(color = "gray20"),
         axis.title.x = element_text(size = 12, vjust = -0.2),
@@ -132,12 +138,6 @@ ggplot(world_trade_data, aes(x=year_month, y=tgz_w1_qnmi_sn)) +
         axis.ticks.length = unit(3, "pt"),
         axis.text.x = element_text(vjust = -0.2, face="italic"), 
         axis.text.y = element_text(face="italic"),
-        legend.position = "top",
-        legend.direction = "horizontal",
-        legend.box = "horizontal",
-        legend.justification = "left",
-        legend.text = element_text(size = 8),
-        legend.title = element_blank(),
         plot.caption = element_text(hjust=0),
         plot.subtitle = element_text(size = 10),
         plot.title = element_text(size = 16, face = "bold", 
@@ -145,7 +145,7 @@ ggplot(world_trade_data, aes(x=year_month, y=tgz_w1_qnmi_sn)) +
 
 # Save Plot ---------------------------------------------------------------
 
-ggsave("plots/World Trade Volume in Percent.png", 
+ggsave("plots/World Trade Volume Dynamics in Percent.png", 
        width = 16, 
        height = 10, 
        units = c("cm"))
@@ -167,13 +167,17 @@ ggplot(world_trade_data, aes(x=year_month, y=tgz_w1_qnmi_sn_abs)) +
                   point.padding = 0.3,
                   size = 2.7,
                   nudge_x = 4,
-                  nudge_y = -10,
+                  nudge_y = -90,
                   show.legend = FALSE) +
   scale_x_date(name = "Year",
-               limits = c(ymd("2005-01-01"), ymd("2018-01-01"))) + 
-  scale_y_continuous(name = "World Trade Volume (in Trillion USD)") +
+               limits = c(ymd("2005-01-01"), ymd("2018-11-01")),
+               breaks = "2 years",
+               labels = date_format("%Y")) + 
+  scale_y_continuous(name = "World Trade Volume (in Trillion USD)",
+                     limits = c(1150, max(world_trade_data$tgz_w1_qnmi_sn_abs)),
+                     breaks = seq(1200, 1800, 200)) +
   labs(caption="Global Trade Alert, 2019") +
-  ggtitle("Changes in World Trade Volume") +
+  ggtitle("World Trade Volume Dynamics") +
   theme_minimal() +
   theme(text = element_text(color = "gray20"),
         axis.title.x = element_text(size = 12, vjust = -0.2),
@@ -184,22 +188,14 @@ ggplot(world_trade_data, aes(x=year_month, y=tgz_w1_qnmi_sn_abs)) +
         axis.ticks.length = unit(3, "pt"),
         axis.text.x = element_text(vjust = -0.2, face="italic"), 
         axis.text.y = element_text(face="italic"),
-        legend.position = "top",
-        legend.direction = "horizontal",
-        legend.box = "horizontal",
-        legend.justification = "left",
-        legend.text = element_text(size = 8),
-        legend.title = element_blank(),
         plot.caption = element_text(hjust=0),
         plot.subtitle = element_text(size = 10),
         plot.title = element_text(size = 16, face = "bold", 
                                   color = "#3B88C8"))
 
-
 # Save --------------------------------------------------------------------
 
-ggsave("plots/World Trade Volume USD.png", 
+ggsave("plots/World Trade Volume Dynamics in USD.png", 
        width = 16, 
        height = 10, 
        units = c("cm"))
-

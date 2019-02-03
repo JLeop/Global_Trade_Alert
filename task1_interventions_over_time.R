@@ -80,7 +80,7 @@ ggplot_interventions(eval_and_tot_interventions)
 
 # Save Plot as png --------------------------------------------------------
 
-ggsave("plots/Number_of_Interventions.png", 
+ggsave("plots/Number of Interventions.png", 
        width = 16, 
        height = 10, 
        units = c("cm"))
