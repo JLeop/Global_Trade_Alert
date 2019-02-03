@@ -90,10 +90,10 @@ diff_names[order(diff_names)]
 # Fuzzy Matching ----------------------------------------------------------
 # Does not work well. To imprecise e.g. Ireland = Iceland, Iraq = Iran
 
-interventions_08_to_18_data %>%
-  stringdist_left_join(WDI_GDP_08_data, 
-                       by = "country", 
-                       max_dist = 1)
+# interventions_08_to_18_data %>%
+#   stringdist_left_join(WDI_GDP_08_data, 
+#                        by = "country", 
+#                        max_dist = 1)
 
 # Cleaning of names -------------------------------------------------------
 
