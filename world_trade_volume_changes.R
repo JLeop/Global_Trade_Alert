@@ -16,7 +16,6 @@ cat("\014") # clear console
 
 library(tidyverse)
 library(readxl)
-library(scales)
 library(ggrepel)
 library(lubridate)
 
@@ -35,8 +34,8 @@ world_trade_data <- t(world_trade_data_xlsx)
 
 # colnames 
 new_colnames <- as.vector(world_trade_data["X__1",])
-colnames(world_trade_data) <- new_colnames # works only if data is not 
-# a tibble
+colnames(world_trade_data) <- new_colnames 
+# works only if data is not a tibble
 
 # Extract base rates ------------------------------------------------------
 
@@ -97,12 +96,10 @@ world_trade_data$label <- ifelse(world_trade_data$year_month == "2008-11-01",
 sample_world_trade_data <- world_trade_data[sample(nrow(world_trade_data), 
                                                   50), ]
 
-
 # Coordinates for G20 Meeting ---------------------------------------------
 
 x_g20_point <- world_trade_data$year_month[world_trade_data$label != ""]
 y_g20_point <- world_trade_data$tgz_w1_qnmi_sn[world_trade_data$label != ""]
-
 
 # Visualization of Relative Change ----------------------------------------
 
@@ -146,7 +143,6 @@ ggplot(world_trade_data, aes(x=year_month, y=tgz_w1_qnmi_sn)) +
         plot.title = element_text(size = 16, face = "bold", 
                                   color = "#3B88C8"))
 
-
 # Save Plot ---------------------------------------------------------------
 
 ggsave("plots/World Trade Volume in Percent.png", 
@@ -154,11 +150,9 @@ ggsave("plots/World Trade Volume in Percent.png",
        height = 10, 
        units = c("cm"))
 
-
 # Absolute Change in World Trade Volume -----------------------------------
 
-world_trade_data$tgz_w1_qnmi_sn_abs <- world_trade_data$tgz_w1_qnmi_sn * as.numeric(base_rates_2010$tgz_w1_qnmi_sn)
-
+world_trade_data$tgz_w1_qnmi_sn_abs <- world_trade_data$tgz_w1_qnmi_sn * as.numeric(base_rates_2010$tgz_w1_qnmi_sn)/1000
 
 # Visualization -----------------------------------------------------------
 
@@ -177,11 +171,9 @@ ggplot(world_trade_data, aes(x=year_month, y=tgz_w1_qnmi_sn_abs)) +
                   show.legend = FALSE) +
   scale_x_date(name = "Year",
                limits = c(ymd("2005-01-01"), ymd("2018-01-01"))) + 
-  scale_y_continuous(name = "World Trade Volume (in %)",
-                     ) +
-  labs(caption="Global Trade Alert, 2019", 
-       subtitle = "Base rate (2010): 100% = 14488.29 billion USD") +
-  ggtitle("Relative Changes in World Trade Volume") +
+  scale_y_continuous(name = "World Trade Volume (in Trillion USD)") +
+  labs(caption="Global Trade Alert, 2019") +
+  ggtitle("Changes in World Trade Volume") +
   theme_minimal() +
   theme(text = element_text(color = "gray20"),
         axis.title.x = element_text(size = 12, vjust = -0.2),
@@ -202,3 +194,12 @@ ggplot(world_trade_data, aes(x=year_month, y=tgz_w1_qnmi_sn_abs)) +
         plot.subtitle = element_text(size = 10),
         plot.title = element_text(size = 16, face = "bold", 
                                   color = "#3B88C8"))
+
+
+# Save --------------------------------------------------------------------
+
+ggsave("plots/World Trade Volume USD.png", 
+       width = 16, 
+       height = 10, 
+       units = c("cm"))
+
