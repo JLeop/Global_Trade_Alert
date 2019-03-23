@@ -1,5 +1,4 @@
 # Global_Trade_Alert
-Application for a position as data scientist.
 
 ## Tasks
 Based on the GTA dataset linked to above, please go through the following exercises.
@@ -14,5 +13,3 @@ C) Write a code that creates, labels and stores individual copies of the above p
 2) Create a scatter plot illustrating the relationship between the number of interventions per implementing country and its share of 2008 world GDP. Use WDI data for GDP (there is an R package that allows you to import WDI data). Label & choose axis length so a reader does not need any outside information. Include an exponential trend line in the graph. Save as png.
 
 3) Please use the data of the CPB World Trade Monitor to produce an informative chart about the volume dynamics in world trade since the first crisis-related G20 summit held in November 2008. You may pre-format the relevant CPB data before you import it into R (e.g. copying an otherwise unchanged piece of one sheet into a CSV). You may not manipulate the data before importing (e.g. you may not re-base the data series in Excel). Please choose a suitable index value for your graph. Although the focus is to discern the dynamics of volume growth since November 2008, the graph may include data prior to that date.
-
-Please send me a self-contained zip including all data, code and output when you are done.
