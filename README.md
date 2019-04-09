@@ -1,9 +1,5 @@
 # Global_Trade_Alert
-
 ## Tasks
-Based on the GTA dataset linked to above, please go through the following exercises.
-As a general rule, please only process data inside R. Do not do any preparatory work on downloaded data in Excel or some other software before importing it into R.
-Note that some instructions are intentionally vague. The data requests we receive are often not clearly formulated and thus demand independent analytical thinking before you start your code. There is not necessarily a single right answer to a vague request, so you'll have to choose a defensible one.
 
 1) Create a line plot with four lines that depicts the number of interventions announced each year between 2009 and 2018. One line for each GTA evaluation (red, amber, green) plus one for their total. Use the colours red, amber and green for the evaluation lines and black for the total.
 A) save as png.
